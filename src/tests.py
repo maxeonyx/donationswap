@@ -152,13 +152,13 @@ class send_contact_message(TestBase):
 
 class create_offer(TestBase):
 
-	def _create_offer(self, name='Ava of Animalia', country=1, amount=42, min_amount=1, charity=1, email='user@test.test'):
+	def _create_offer(self, name='Ava of Animalia', country=1, amount=42, max_num_swaps=1, charity=1, email='user@test.test'):
 		return self.ds.create_offer(
 			captcha_response='irrelevant',
 			name=name,
 			country=country,
 			amount=amount,
-			min_amount=min_amount,
+			max_num_swaps=max_num_swaps,
 			charity=charity,
 			email=email,
 			expiration={
@@ -216,15 +216,15 @@ class create_offer(TestBase):
 		self.assertEqual(self._get_offer(), None)
 		self.assertEqual(self.mail.calls, {})
 
-	def test_bad_min_amount(self):
+	def test_bad_max_num_swaps(self):
 		with self.assertRaises(donationswap.DonationException):
-			self._create_offer(min_amount='fourty-two')
+			self._create_offer(max_num_swaps='fourty-two')
 		self.assertEqual(self._get_offer(), None)
 		self.assertEqual(self.mail.calls, {})
 
-	def test_invalid_min_amount(self):
+	def test_invalid_max_num_swaps(self):
 		with self.assertRaises(donationswap.DonationException):
-			self._create_offer(min_amount=-42)
+			self._create_offer(max_num_swaps=-42)
 		self.assertEqual(self._get_offer(), None)
 		self.assertEqual(self.mail.calls, {})
 
@@ -248,7 +248,7 @@ class confirm_offer(TestBase):
 			name='Buzz of Protozania',
 			country=1,
 			amount=42,
-			min_amount=42,
+			max_num_swaps=42,
 			charity=1,
 			email='user@test.test',
 			expiration={
@@ -279,7 +279,7 @@ class delete_offer(TestBase):
 			name='Ava of Animalia',
 			country=1,
 			amount=42,
-			min_amount=42,
+			max_num_swaps=42,
 			charity=1,
 			email='user@test.test',
 			expiration={
@@ -367,7 +367,7 @@ class Templates(unittest.TestCase):
 			'{%YOUR_NAME%}',
 			'{%YOUR_CHARITY%}',
 			'{%YOUR_AMOUNT%}',
-			'{%YOUR_MIN_AMOUNT%}',
+			'{%YOUR_MAX_NUM_SWAPS%}',
 			'{%YOUR_ACTUAL_AMOUNT%}',
 			'{%YOUR_CURRENCY%}',
 			'{%THEIR_CHARITY%}',
@@ -385,7 +385,7 @@ class Templates(unittest.TestCase):
 			'{%CHARITY%}',
 			'{%CURRENCY%}',
 			'{%AMOUNT%}',
-			'{%MIN_AMOUNT%}',
+			'{%MAX_NUM_SWAPS%}',
 		]
 		txt = util.Template('new-post-email.txt').content
 		self._check_expected_placeholders(txt, placeholders)
@@ -405,7 +405,7 @@ class Templates(unittest.TestCase):
 		self.assertTrue('bad captcha' in data)
 		self.assertTrue('bad email address' in data)
 		self.assertTrue('bad expiration date' in data)
-		self.assertTrue('bad min_amount' in data)
+		self.assertTrue('bad max_num_swaps' in data)
 		self.assertTrue('charity not found' in data)
 		self.assertTrue('country not found' in data)
 		self.assertTrue('match not found' in data)

@@ -9,7 +9,7 @@ This amount may change a little due to currency fluctuations.
 For reference, your offer was:
 Charity you wish to support: {%YOUR_CHARITY%}
 Amount: {%YOUR_AMOUNT%} {%YOUR_CURRENCY%}
-Minimum swap amount: {%YOUR_MIN_AMOUNT%} {%YOUR_CURRENCY%}
+Minimum swap amount: {%YOUR_MAX_NUM_SWAPS%} {%YOUR_CURRENCY%}
 
 
 Please visit https://donationswap.eahub.org/match/#{%SECRET%}

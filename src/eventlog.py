@@ -19,7 +19,7 @@ def _offer_to_obj(offer, prefix=None):
 		prefix+'email': offer.email,
 		prefix+'country': offer.country.name,
 		prefix+'amount': offer.amount,
-		prefix+'min_amount': offer.min_amount,
+		prefix+'max_num_swaps': offer.max_num_swaps,
 		prefix+'currency': offer.country.currency.iso,
 		prefix+'charity': offer.charity.name,
 		prefix+'expires_ts': offer.expires_ts.strftime(ISO_FORMAT),

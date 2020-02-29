@@ -7,7 +7,6 @@
 	const offer = {};
 	const currencyByCountry = {};
 
-	let autoMin = true;
 	let captchaValid = false;
 	let offerValid = false;
 
@@ -117,18 +116,9 @@
 			validate();
 		};
 
-		ui.intAmount.oninput = () => {
-			if (autoMin) {
-				ui.intMinAmount.value = Math.floor(ui.intAmount.value / 2);
-			}
-		};
-
 		ui.intAmount.onchange = () => validate();
 
-		ui.intMinAmount.onchange = () => {
-			autoMin = false;
-			validate();
-		};
+		ui.intMaxNumSwaps.onchange = () => validate();
 
 		ui.intExpirationDay.onchange = () => validate();
 		ui.intExpirationMonth.onchange = () => validate();
@@ -155,7 +145,7 @@
 		ui.idCountry.value = obj.country || fallback.country;
 		ui.intAmount.value = obj.amount || fallback.amount;
 		ui.idCharity.value = obj.charity || fallback.charity;
-		ui.intMinAmount.value = obj.min_amount || fallback.min_amount;
+		ui.intMaxNumSwaps.value = obj.max_num_swaps || fallback.max_num_swaps;
 		ui.intExpirationDay.value = (obj.expires || {}).day || fallback.expires.day;
 		ui.intExpirationMonth.value = (obj.expires || {}).month || fallback.expires.month;
 		ui.intExpirationYear.value = (obj.expires || {}).year || fallback.expires.year;
@@ -169,7 +159,7 @@
 		offer.name = ui.txtName.value;
 		offer.country = parseInt(ui.idCountry.value, 10);
 		offer.amount = parseInt(ui.intAmount.value, 10);
-		offer.min_amount = parseInt(ui.intMinAmount.value, 10);
+		offer.max_num_swaps = parseInt(ui.intMaxNumSwaps.value, 10);
 		offer.charity = parseInt(ui.idCharity.value, 10);
 		offer.email = ui.txtEmail.value;
 		offer.expiration = {
@@ -207,7 +197,7 @@
 				name: '',
 				country: info.client_country,
 				amount: null,
-				min_amount: null,
+				max_num_swaps: 5,
 				charity: 30, // Animal Equality (first in alphabet)
 				email: '',
 				expires: {

@@ -10,7 +10,7 @@
 	};
 
 	function getSummary(offer) {
-		return `${offer.country}, ${offer.charity}, ${offer.min_amount_for_charity_localized}-${offer.amount_for_charity_localized} ${offer.currency_localized}`;
+		return `${offer.country}, ${offer.charity}, ~${offer.suggested_min_amount_for_charity} - ${offer.amount_for_charity_localized} ${offer.currency_localized}`;
 	}
 
 	function renderDetails(details) {

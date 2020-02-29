@@ -9,7 +9,7 @@
 	<script src="https://www.google.com/recaptcha/api.js"></script>
 	<style>
 		#intAmount,
-		#intMinAmount {
+		#intMaxNumSwaps {
 			width: 6em;
 		}
 
@@ -56,8 +56,12 @@
 				<a href="/charities/" target="_blank">Learn more</a> about our list of supported charities.
 			</p>
 			<p>
-				<label for="intMinAmount">The smallest match I'm willing to agree to is</label>
-				<input class="bordered" id="intMinAmount" type="number">
+				Depending on the size and details of your donation, we might ask you split it up over multiple swaps.
+				This makes it easier for us to match you with other donors and to reach your maximum donation.
+			</p>
+			<p>
+				<label for="intMaxNumSwaps">The maximum number of swaps I am willing to do is:</label>
+				<input class="bordered" id="intMaxNumSwaps" type="number">
 				<span id="txtCurrency2">$</span>.
 			</p>
 			<p>

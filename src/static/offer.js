@@ -26,7 +26,7 @@
 				ui.currency2.textContent = offer.currency;
 				ui.name.textContent = offer.name;
 				ui.amount.textContent = offer.amount;
-				ui.minAmount.textContent = offer.min_amount;
+				ui.maxNumSwaps.textContent = offer.max_num_swaps;
 				ui.charity.textContent = offer.charity;
 				ui.creationDate.textContent = Date.fromUtcIsoString(offer.created_ts).toLocalString('%Y-%m-%d %H:%M');
 				ui.expirationDate.textContent = Date.fromUtcIsoString(offer.expires_ts).toLocalString('%Y-%m-%d %H:%M');

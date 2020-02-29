@@ -337,6 +337,7 @@ class Offer(EntityMixin, IdMixin, SecretMixin): # pylint: disable=too-many-insta
 		self.country_id = row['country_id']
 		self.amount = row['amount']
 		self.min_amount = row['min_amount']
+		self.max_num_swaps = row['max_num_swaps']
 		self.charity_id = row['charity_id']
 		self.created_ts = row['created_ts']
 		self.expires_ts = row['expires_ts']
@@ -399,12 +400,12 @@ class Offer(EntityMixin, IdMixin, SecretMixin): # pylint: disable=too-many-insta
 		]
 
 	@classmethod
-	def create(cls, db, secret, name, email, country_id, amount, min_amount, charity_id, expires_ts):
+	def create(cls, db, secret, name, email, country_id, amount, max_num_swaps, charity_id, expires_ts):
 		query = '''
 			INSERT INTO offers
-			(secret, name, email, country_id, amount, min_amount, charity_id, expires_ts, confirmed)
+			(secret, name, email, country_id, amount, max_num_swaps, charity_id, expires_ts, confirmed)
 			VALUES
-			(%(secret)s, %(name)s, %(email)s, %(country_id)s, %(amount)s, %(min_amount)s, %(charity_id)s, %(expires_ts)s, false)
+			(%(secret)s, %(name)s, %(email)s, %(country_id)s, %(amount)s, %(max_num_swaps)s, %(charity_id)s, %(expires_ts)s, false)
 			RETURNING *;
 		'''
 		row = db.write_read_one(query,
@@ -413,7 +414,7 @@ class Offer(EntityMixin, IdMixin, SecretMixin): # pylint: disable=too-many-insta
 			email=email,
 			country_id=country_id,
 			amount=amount,
-			min_amount=min_amount,
+			max_num_swaps=max_num_swaps,
 			charity_id=charity_id,
 			expires_ts=expires_ts
 		)

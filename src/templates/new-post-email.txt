@@ -4,7 +4,7 @@ Thanks so much for posting a donation swap offer on the EA donation swap site.
 Details of your offer:
 Charity you wish to support: {%CHARITY%}
 Amount: {%CURRENCY%} {%AMOUNT%}
-Minimum swap amount: {%CURRENCY%} {%MIN_AMOUNT%}
+Minimum swap amount: {%CURRENCY%} {%MAX_NUM_SWAPS%}
 
 The offer will go live when you click this confirmation link:
 https://donationswap.eahub.org/offer/#{%SECRET%}

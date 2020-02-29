@@ -233,14 +233,14 @@ class Donationswap:
 		replacements = {
 			'{%NAME%}': offer.name,
 			'{%AMOUNT%}': offer.amount,
-			'{%MIN_AMOUNT%}': offer.min_amount,
+			'{%MAX_NUM_SWAPS%}': offer.max_num_swaps,
 			'{%CURRENCY%}': offer.country.currency.iso,
 			'{%CHARITY%}': offer.charity.name,
 			'{%ARGS%}': '#%s' % urllib.parse.quote(json.dumps({
 				'name': offer.name,
 				'country': offer.country_id,
 				'amount': offer.amount,
-				'min_amount': offer.min_amount,
+				'max_num_swaps': offer.max_num_swaps,
 				'charity': offer.charity_id,
 				'email': offer.email,
 				'expires': {
@@ -281,14 +281,14 @@ class Donationswap:
 		replacements = {
 			'{%NAME%}': offer.name,
 			'{%AMOUNT%}': offer.amount,
-			'{%MIN_AMOUNT%}': offer.min_amount,
+			'{%MAX_NUM_SWAPS%}': offer.max_num_swaps,
 			'{%CURRENCY%}': offer.country.currency.iso,
 			'{%CHARITY%}': offer.charity.name,
 			'{%ARGS%}': '#%s' % urllib.parse.quote(json.dumps({
 				'name': offer.name,
 				'country': offer.country_id,
 				'amount': offer.amount,
-				'min_amount': offer.min_amount,
+				'max_num_swaps': offer.max_num_swaps,
 				'charity': offer.charity_id,
 				'email': offer.email,
 				'expires': {
@@ -456,7 +456,7 @@ class Donationswap:
 			return charity_in_country.instructions
 		return None
 
-	def _validate_offer(self, name, country, amount, min_amount, charity, email, expiration):
+	def _validate_offer(self, name, country, amount, max_num_swaps, charity, email, expiration):
 		errors = util.Template('errors-and-warnings.json')
 
 		name = name.strip()
@@ -471,21 +471,14 @@ class Donationswap:
 		if amount < 0:
 			raise DonationException(errors.json('bad amount'))
 
-		min_amount = self._int(min_amount, errors.json('bad min_amount'))
-		if min_amount < 0:
-			raise DonationException(errors.json('bad min_amount'))
-
-		if min_amount > amount:
-			raise DonationException(errors.json('min_amount_larger'))
+		max_num_swaps = self._int(max_num_swaps, errors.json('bad max_num_swaps'))
+		if max_num_swaps < 0:
+			raise DonationException(errors.json('bad max_num_swaps'))
 
 		min_allowed_amount = self._currency.convert(
 			country.min_donation_amount,
 			country.min_donation_currency,
 			country.currency)
-
-		if min_amount < min_allowed_amount:
-			raise DonationException(errors.json('min_amount_too_small') % (
-				country.min_donation_amount, country.min_donation_currency.iso))
 
 		charity = entities.Charity.by_id(charity)
 		if charity is None:
@@ -505,31 +498,31 @@ class Donationswap:
 		except ValueError:
 			raise DonationException(errors.json('bad expiration date'))
 
-		return name, country, amount, min_amount, charity, email, expires_ts
+		return name, country, amount, max_num_swaps, charity, email, expires_ts
 
 	@ajax
-	def validate_offer(self, captcha_response, name, country, amount, min_amount, charity, email, expiration):
+	def validate_offer(self, captcha_response, name, country, amount, max_num_swaps, charity, email, expiration):
 		# pylint: disable=unused-argument
 		try:
-			self._validate_offer(name, country, amount, min_amount, charity, email, expiration)
+			self._validate_offer(name, country, amount, max_num_swaps, charity, email, expiration)
 			return None
 		except DonationException as e:
 			return str(e)
 
 	@ajax
-	def create_offer(self, captcha_response, name, country, amount, min_amount, charity, email, expiration):
+	def create_offer(self, captcha_response, name, country, amount, max_num_swaps, charity, email, expiration):
 		errors = util.Template('errors-and-warnings.json')
 		if not self.automation_mode and not self._captcha.is_legit(self._ip_address, captcha_response):
 			raise DonationException(errors.json('bad captcha'))
 
-		name, country, amount, min_amount, charity, email, expires_ts = self._validate_offer(name, country, amount, min_amount, charity, email, expiration)
+		name, country, amount, max_num_swaps, charity, email, expires_ts = self._validate_offer(name, country, amount, max_num_swaps, charity, email, expiration)
 
 		secret = create_secret()
 		# Do NOT return this secret to the client via this method.
 		# Only put it in the email, so that having the link acts as email address verification.
 
 		with self._database.connect() as db:
-			offer = entities.Offer.create(db, secret, name, email, country.id, amount, min_amount, charity.id, expires_ts)
+			offer = entities.Offer.create(db, secret, name, email, country.id, amount, max_num_swaps, charity.id, expires_ts)
 			eventlog.created_offer(db, offer)
 
 		if self.automation_mode:
@@ -541,7 +534,7 @@ class Donationswap:
 			'{%CHARITY%}': offer.charity.name,
 			'{%CURRENCY%}': offer.country.currency.iso,
 			'{%AMOUNT%}': offer.amount,
-			'{%MIN_AMOUNT%}': offer.min_amount,
+			'{%MAX_NUM_SWAPS%}': offer.max_num_swaps,
 		}
 		self._mail.send(
 			util.Template('email-subjects.json').json('new-post-email'),
@@ -576,7 +569,7 @@ class Donationswap:
 			'{%CHARITY%}': offer.charity.name,
 			'{%CURRENCY%}': offer.country.currency.iso,
 			'{%AMOUNT%}': offer.amount,
-			'{%MIN_AMOUNT%}': offer.min_amount,
+			'{%MAX_NUM_SWAPS%}': offer.max_num_swaps,
 			'{%COUNTRY%}': offer.country.name
 		}
 
@@ -592,7 +585,7 @@ class Donationswap:
 			'name': offer.name,
 			'currency': offer.country.currency.iso,
 			'amount': offer.amount,
-			'min_amount': offer.min_amount,
+			'max_num_swaps': offer.max_num_swaps,
 			'charity': offer.charity.name,
 			'created_ts': offer.created_ts.isoformat(' '),
 			'expires_ts': offer.expires_ts.isoformat(' '),
@@ -627,11 +620,6 @@ class Donationswap:
 			offer_b.amount,
 			offer_b.country.currency.iso,
 			offer_a.country.currency.iso) * offer_b.country.gift_aid_multiplier
-
-		if amount_a_in_currency_b < offer_b.min_amount * offer_b.country.gift_aid_multiplier:
-			return 0, 'amount mismatch'
-		if amount_b_in_currency_a < offer_a.min_amount * offer_a.country.gift_aid_multiplier:
-			return 0, 'amount mismatch'
 
 		#xxx only count as "benefit" if own charity isn't tax-deductible, but other donor's one is
 		#    (otherwise we would reward pointless swaps, where both donors already get their tax back)
@@ -1192,7 +1180,7 @@ class Donationswap:
 		final["filtered_count"] = len(finalData)
 		final["data"] = finalData
 		return final
-			
+
 
 	def _get_unmatched_offers(self):
 		'''Returns all offers that are confirmed and
@@ -1205,30 +1193,41 @@ class Donationswap:
 	@admin_ajax
 	def get_unmatched_offers(self, user):
 		admin_currency = entities.Currency.by_id(user['currency_id'])
-		return [
-			{
+
+		def build_unmatched_offer(offer):
+
+			amount_including_gift_aid = offer.amount * offer.country.gift_aid_multiplier
+
+			if offer.min_amount == 0:
+				# offers that were created after the change to "max_num_swaps"
+				suggested_min_amount_for_charity = amount_including_gift_aid / offer.max_num_swaps
+			else:
+				# offers that still have a min_amount
+				suggested_min_amount_for_charity = offer.min_amount * offer.country.gift_aid_multiplier
+
+			return {
 				'id': offer.id,
 				'country': offer.country.name,
 				'amount': offer.amount,
-				'min_amount': offer.min_amount,
+				'max_num_swaps': offer.max_num_swaps,
 				'currency': offer.country.currency.iso,
 				'charity': offer.charity.name,
 				'expires_ts': offer.expires_ts.strftime('%Y-%m-%d %H:%M:%S'),
 				'email': offer.email,
 				'name': offer.name,
-				'amount_for_charity_localized': self._currency.convert(
-					offer.amount * offer.country.gift_aid_multiplier,
+				'suggested_min_amount_for_charity': self._currency.convert(
+					suggested_min_amount_for_charity,
 					offer.country.currency.iso,
 					admin_currency.iso),
-				'min_amount_for_charity_localized': self._currency.convert(
-					offer.min_amount * offer.country.gift_aid_multiplier,
+				'amount_for_charity_localized': self._currency.convert(
+					amount_including_gift_aid,
 					offer.country.currency.iso,
 					admin_currency.iso),
 				'currency_localized': admin_currency.iso,
 				'offer_secret': offer.secret,
 			}
-			for offer in self._get_unmatched_offers()
-		]
+
+		return list(map(build_unmatched_offer, self._get_unmatched_offers()))
 
 	@admin_ajax
 	def get_match_scores(self, _, offer_id):
@@ -1246,7 +1245,7 @@ class Donationswap:
 			'{%YOUR_NAME%}': my_offer.name,
 			'{%YOUR_CHARITY%}': my_offer.charity.name,
 			'{%YOUR_AMOUNT%}': my_offer.amount,
-			'{%YOUR_MIN_AMOUNT%}': my_offer.min_amount,
+			'{%YOUR_MAX_NUM_SWAPS%}': my_offer.max_num_swaps,
 			'{%YOUR_ACTUAL_AMOUNT%}': my_actual_amount,
 			'{%YOUR_CURRENCY%}': my_offer.country.currency.iso,
 			'{%THEIR_CHARITY%}': their_offer.charity.name,
