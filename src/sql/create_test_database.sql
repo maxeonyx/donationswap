@@ -8,6 +8,7 @@
 \ir upgrades/2018-11-16_admin.sql
 \ir upgrades/2018-11-18_gift_aid.sql
 \ir upgrades/2018-11-24_tax_factor.sql
+\ir upgrades/2020-02-29_max_num_swaps.sql
 
 \ir test_data/00-currencies.sql
 \ir test_data/01-countries.sql
