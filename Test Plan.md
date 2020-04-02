@@ -22,4 +22,3 @@ I am creating a list of tests that would be nice to have. These will start as ma
     - Creating a match.
     - Maintaining currency info.
     - Maintaining the charity/country matrix.
-
