@@ -111,8 +111,6 @@
 			const currency = currencyByCountry[ui.idCountry.value];
 			ui.txtCurrency1.textContent = currency.iso;
 			ui.txtCurrency1.setAttribute('title', currency.name);
-			ui.txtCurrency2.textContent = currency.iso;
-			ui.txtCurrency2.setAttribute('title', currency.name);
 			validate();
 		};
 
